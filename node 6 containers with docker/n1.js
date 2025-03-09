@@ -64,3 +64,6 @@
 //  but how i know that how many or which envaroment variable it has, see in docker hub
 
 // (see pic 22)then how did you figurout username and which table to conenct , so by defaut postgres has defalut username and passworkd and this every thing is mention on docker hub (see pic 23)
+
+// above i start container and now if my container is running and i want to go inside it and run command
+// cmd : docker exec -it <container Id> /bin/bash  
