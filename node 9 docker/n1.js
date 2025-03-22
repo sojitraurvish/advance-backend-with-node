@@ -158,6 +158,39 @@
 // and we have successfully connected our containers with same network (see pic 38) so now our nodejs container can talk with mongo container
 
 
+// New video Docker Push, Compose, execute
+
+// to kill the containers
+// cmd docker ps
+// dmd docker kill <Container Id>
+
+// to remove images 
+// docker images
+// docker rmi <mongo - image name>
+// docker rmi <mongo - image name> --force // it the container is running with that image you can force it to remove
+
+
+// docker exec - how to go inside container 
+
+// how to run single command inside the container
+// cmd docker exec <container Id> ls - shows the content inside the container  
+// cmd docker exec <container Id> pwd - shows the content inside the container  
+
+// but how to get bash access of the container and run multiple command inside
+// cmd exec -it <Container Id> /bin/bash - this mean you want to create bash session for this container id, after running this cmd i am inside the container
+// for exit type cmd exit
+
+// how to push images on docker hub
+// but what banifits it brings if you pull code from github then you have to do 10 diff tings but when you pull image from docker hub it is ready to use directly
+// sign up in docker hub
+
+// CREATE REPO ON DOCKER HUB - here also repo is same as github repo 
+
+// so once you create repo it will give you cmd to push your image
+
+// docker push sojitraurvish/mine-first-test:tagname
+// <sojitraurvish> is name space that you always have to put while pushing and pulling the image then 
+// <mine-first-test> - is your repo name the why mongo image have just have name mongo why not namespace before that because that is official image to create image like that you have to mail to docker hub team or use paid account 
 
 
 
