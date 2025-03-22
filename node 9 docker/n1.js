@@ -190,8 +190,56 @@
 
 // docker push sojitraurvish/mine-first-test:tagname
 // <sojitraurvish> is name space that you always have to put while pushing and pulling the image then 
-// <mine-first-test> - is your repo name the why mongo image have just have name mongo why not namespace before that because that is official image to create image like that you have to mail to docker hub team or use paid account 
+// <mine-first-test> - is your repo name the why mongo image have just have name mongo why not namespace before that because that is official image to create image like that you have to mail to docker hub team or use paid account, but right now you have to use namespace or prefix if you creating your own image or repo.
+
+// here tag name mean version of image in same repo you can push multiple version of image like mong-v1 mongo-v2 so it's like commit id, will see it bello bit more 
+
+// so utile now while creating the image we used to give the name we want it to give but now if you want to push your image to repo you have to give name as in repo like <sojitraurvish/mine-first-test> (see pic 39) 
+// now your image is create now to push the image on docker hub write 
+// cmd docker push <sojitraurvish/mine-first-test - repo name>
+// but this command only work if you are logedin in docker hub with cli to get logedin write this in your terminal
+// docker login - and add creads
+// if you loded in via google in your docker hub then you do not have password in that case you have to create access token 
+// so go to profile > security > new Access Token > give desc > and read,w,and Delete permition and click on generate and check further process on the in internet
+
+// but why it shows tag latest(see pic 40) 
+// docker build -t <sojitraurvish/mine-first-test - repo name> . -> when you run this command so at this time it set the default tag name is letest that why you see letest in repo image(to see all image tags run cmd docker image) 
+
+// but now to provide tagname to iamge so while creating the image (see pic 41)
+// docker build -t <sojitraurvish/mine-first-test - repo name>:<tag_name> .
+// why this tagname is useful because in same repo you have multiple versions of the image you go further you have multiple version of you app and you want that to be track on docker hub, if you go to mongo image on docker hub it does have multiple version of there image with diff tag names(see image 42), this some tag name is beging using in git also but the name is commit id 
+
+// so while creatting iamge or pushing the image tagname say version of the image
+// like node:20 - 20 mean tagname or 20-alpine is tag name and with that we use diff version of it
+
+// so when you create the pipeline to create image like when you push your code to github the piple line trigger and it push the new image with that commit id as tag name that how it works and from your aws you pull that image and that how pipeline and you have mutiple vestion of image as like git commit
+
+// now Let's learn docker compose (see pic 43)
+// when you are creating the docker compose file you create as yml like this -> docker-compose.yml file (see pic 44)
+
+// the thing is you have mutliple diff processes (see pic 45) and for that you have to write bunch of commanded on terminal instead you can create script in docker-compose.yml file and with sigle command you can start all those process by runing single command image.png 
+
+// (see pic 46) how to start multiple containers with  docker-compose.yml
+// when every you have multiple services in same docker compose the all the services by defalut attach to network you do not need to create
+
+// now to run all these command, very simple got the folder where this docker-compose.yaml(generally in your root folder) file is and run cmd (see image 46)
+// start all the services that mentioned in docker-compose file
+// cmd docker-compose up 
+
+// docker volume ls
+// docker network ls
+
+// right now we are using alredy built in images in docker images but you also can built iamges with docker compose rather than using alrady build image (see iamge 47) 
 
 
+// 1 more concept bind mounts (see pic 48)
+// in volume you mounts your container data folder in created volumes, whereas now with bind mount we mount that data in our machine's once folder where docker continer is ruuning (see pie 49)
+
+// use case -> if i start next js application, then it gives me the functionality of hor reload but when i once create the image and change code in my application i will not hot reload my image so that i will not get letest code in my running app from image(1 way to do that is go to inside continer and change someting but that won't work here) and to do that just run this command to create bind mounts so that the code exits in your direactory taht code exits in your container so taht how it hot reloads
+// Note: i do not need to rebuild the image why becasue my locally directly app folder code get copied inside coniner and if i change anyting inside container then it get changed in my loacl folder as same as docker volume but bit diffrent
+
+// see pic 50, 51 , here i just hot reload my app folder only becasue at only as developer i make lot of changes,
+
+// this for .yml file see pic 52
 
 
