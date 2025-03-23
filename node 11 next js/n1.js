@@ -1,0 +1,1 @@
+// types of cookies see image 1
