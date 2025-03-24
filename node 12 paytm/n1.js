@@ -13,6 +13,41 @@
 // Notes
 // process 1 request at time
 
+// see pic 6 for 1 more ref for weebhook 
+
+// what is onramping
+
+// when user take money to his paytm acc it will call the hdfc api hdfc send link with token and when user pay hdfc do two things first i will -200 rs from that user acc and add it to paytm acc(it will add this things may be once in days because lot of transations), second it will call webhook service that we did -200 form that user acc so please now update the user balance in your db so user can see, so paytm has this endpoint or webhook  internal.paytm.hdfc to tell hdfc to paytm and this is called web hook and finicial services talk to banks
+
+// e.g make my trip
+// i first go to make my trip, book some ticket,ane whe i go to this final banking page now i have to pay 10,000 to make my trip (see pic 7), so i selected option netbanking and selected hdfc bank, now i click on payNow, now the thing should happen is from my hdfc bank acc money should be debited and created to make my trip acc, for that when i click on paynow request go to make my trip server, okay so MMT say i have to charge 10,000 rs from this user but it does not have access to this user's hdfc bank acc, so here MMT just know that this user want to pay via hdfc bank, so while processing this request it tells hdfc server, i have user with id 10(MMT id) who want pay 10,000 to me via hdfc please give me url where i can send them, then hdfc says okay send them to netbanking.hdfc.com/token=someting and your server send same thing to frontend and you redirect the user to netbanking.hdfc.com (see pic 9 ), now when user done transation(form the token hdfc know that this is that user for that MMT told me to deduct this much money), but how does MMT get know that urvish have paid the money because all this interations are happening on hdfc page,so when hdfc transation get scucess(at imidiate time hdfc do not transfer money to MMT acc, it will do once in day), but it will update and call MMT server (via webhook - why - because we send user to hdfc page now we do not know when payment will accure, so we need once seperate backend as webhook which continouselly listen to hdfc so when payment is done hdfc all our this service we actually prvide end point to hdfc to hit when payment is done) that this user have paid 10,000 rs you can give him tickets so our webhook server update this info in db,
+// 
+// what should not happen is when payment is done you should not redirect user to sccess page or MMT page and form there do not update backend that payment is done and also told form MMT server to hdfc server that payment is done instead of that hdfc server dirctly talk to MMT server and update the data in db that for this user payment is done
+
+// in case fo roserpay and stripe the above process remain same
+// roserpay api talk to your api via webhooks 
+
+// one more thing then this webhook can be used by any one to make flase requests , we will create password for that in this web hook and that password we share to only hdfc bank no once else, it mean whoever is want to use your webhook you have to share the password with them to use and call you webhook when payment is done you also can do ip base blocking but password is inough to solve this problem
+
+// week-18-2.-final steps(see image 10)
+
+// see in db
+// when ever user signup we should put atleast one entry with 0 balance in his wallate
+// onRamptransation whenever you start transation you put entry here with status=pending and when your webhook get called you should update it with success
+// hdfc bank,diff bank , card, upi all these are onRemptransation
+// what if your hdfc server is down and it won't call your hook then your payment in pending state for hours the you can add check for certain time or like 2 hours then assue it get faild and you can add some checkes, what if your webhook server get down the hdfc sever will ping you after hour, mean after centain period of time and it will keep retrying
+
+// in your /hdfcWebhook you should not first find the user and then update the balance because if requst comes at time to credate 200 and 400 rs and both together runs then your balance became from 0 to 400 not 600 instead you are using the query that we use in this endpoint to update blance it may uses trasation managed query inner the hood
+
+// when the transation start you put the entry in onramp table and again when webhook call your api you find that transation with token and update the data see in endpoint /hdfcWebhook
+
+// one more thing you kee in mine that in this /hdfcWenhook api you have to send the success code 200 then they got to know that you have correctly updated user balance if you send 411 then they refund the user money
+
+// and here 1 more thing you have to do with transation management is you have to put entry in both the table if transation fail then revert the transaction and also send 411 to hdfc as faild the transation and revert the user money back to there bank accc
+
+// marchant transtion
+// offRamptranstion send the money out the bank
+
 
 
 
