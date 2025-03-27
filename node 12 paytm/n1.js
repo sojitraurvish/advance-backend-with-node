@@ -61,6 +61,8 @@
 
 // now we do not have real bank that will call our webhook service so, in bank-webhook folder we made that web hook that bank call, but right now we do not have bank server that call that api so we have to call it by our self, and with that we increase user balance and make onrapmtransction success 
 
+// fisrt we request to bank bank give you link with token that link you give user and also send token so bank identify the user with token you also send money and all with it
+
 // how do ptp trnsfer (phone to phone transfer) you can send money to someone's phone number
 // ptp mena mean pear to pear transfer one person on paytm can send money to other person on his wallet
 
@@ -69,5 +71,9 @@
 // etl pipeline in aws, if lot of request will comes and updated ne data then use this pipeline and create new data and and use it for next 15 mins and and do same process
 
 // use normal data base put all the data, leter on you introduce serch based on username then dump that data in elastic search and start using it for search
+
+// 1 issue if user has onRapmtransation processing then and only you should increate the balance for that perticualr transation with /hefcWebhook
+
+// how let's see ptp transation
 
 // 
