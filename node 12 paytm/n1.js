@@ -135,11 +135,14 @@
 // 		- name: Check formatting 
 // 		run: npm run format:fix
 
+// you can add here test cases as well
+
 // if above any script fails then here at this pull requst section(see pic) i have big red mark here so i as mentainer can lookat it and ignore it, and tell devloper to fix first fix the workflow then i will look at your pull reauest   that why CI is very helpful, before CI i had to manually clone his branch and check that is this person list the code corrrectly or not but now i can simpally use CI for that
 
 // see pic 26 for all step expalination
 
-// now let create CI for this prject our primary focus on when someone push the code our build should not faild
+// now let create CI for this prject our primary focus on when someone push the code our build should be created and shuould
+//  not faild
 
 // now consider repo week-18-2-final 
 // first run build stap locally and make sure it is not failing locallay
@@ -208,35 +211,37 @@
 // name: Build and Deploy to Docker Hub
 
 // on:
-//   push:
+//   push: // now thing are not workig based on pull request, if only some push to master branch then and only you run build-and-push
 //     branches:
 //       - master  # Adjusted to trigger on pushes to master
 
 // jobs:
-//   build-and-push:
-//     runs-on: ubuntu-latest
+//   build-and-push: // now thing are not workig based on pull request, if only some push to master branch then and only you run build-and-push
+//     runs-on: ubuntu-latest // on ubantu machine
 //     steps:
 //     - name: Check Out Repo
-//       uses: actions/checkout@v2
+//       uses: actions/checkout@v2 // on ubantu machine checkout the code
 
 //     - name: Prepare Dockerfile
 //       run: cp ./docker/Dockerfile.user ./Dockerfile
 
 //     - name: Log in to Docker Hub
-//       uses: docker/login-action@v1
+//       uses: docker/login-action@v1 // login to docker hub
 //       with:
-//         username: ${{ secrets.DOCKER_USERNAME }}
+//         username: ${{ secrets.DOCKER_USERNAME }} // this secrects come form github secreacts and form there it comes from docker hub secretes that we generate bellow
 //         password: ${{ secrets.DOCKER_PASSWORD }}
 
 //     - name: Build and Push Docker image
-//       uses: docker/build-push-action@v2
-//       with:
-//         context: .
-//         file: ./Dockerfile
+        // here {
+//       uses: docker/build-push-action@v2 // build and push docker image
+//       with: // here starts all variables
+//         context: .                       // fist where our docker files comes form see the pic 38 context is in root folder
+//         file: ./Dockerfile // right now this is right path because i Prepare Dockerfile above else use this (see pic 39) 
 //         push: true
-//         tags: 100xdevs/web-app:latest
+//         tags: <docker username>/<reponame>:latest
+        // } up to here we write github actions but we can also write this code our self but this logic is already written by very smart people so dirctly use that and proved all the variables it needs
 
-//     - name: Verify Pushed Image
+    // - name: Verify Pushed Image // just to veriry that is gone to bitbucket or not
 //       run: docker pull 100xdevs/web-app:latest
 
 //     - name: Deploy to EC2
@@ -260,3 +265,41 @@
 
 // someone says that instead of doing this you can use precommit hooks like hasky but there are trust issues with this commad you can directly push your code without being check by your precommit hook git commit -m "adfds" --noverify
 // eslint is diff 
+
+// create repo on docker hub, now from our cd pipe line workflow github will create image on unabtu github machine it's own and push it to docker hub, so we have to give our docker hub creads to github(workflow) to push the image on docker hub, so on docker hub we need to generate some credentials
+// got to my profile > security > create new token for github > (access toke desc -> github), (permition, read,write,delete), read write also fine > click on generate > and it give you token (see pic 32), now the question is how will you give this passwrod to github >  go to github repo > go to settings > secrate > select actions here becasue workflow action will push to github > secarate tab > create repository secrate and click on genrerate new > and add use name i am using DOCKER_USERNAME because that we used in cide pipiline, and put your docker hub username (see pic 33), create same 1 more variable for password and give it name as (see pic 34 as we are useing it in ci cd pipeline the name) and as pass is docker generted token 
+
+// you should not put your secration in your ci cd workflow file use can put them as above and can directly use them in your ci cd file like this (see pic 35,36,37)
+
+// once you push the above pipeline and do commit my image get craeted and push to docker hub (see pic 40)
+
+// 1 need ec2 secrects
+// now lets pull the iamge form ec2 machine (see pic 41), so now form withub workflow from github machine i have to shh in ec2 machine and do docker pull to fetch letest iamge there that means docker again need to use my ec2 secrets so i again have to add few more secrates
+
+// to crete new ec2 instance 
+// 1 sectct ubantu machine
+// 2 create new key pair or set old one
+// 3 allow port access
+
+// on ec2 server install docker ther how to instll(see pic 41) and check with this command  sudo docker run hello-world
+
+// these bellow action also above
+
+// as we loin in ec2 shh(see pic 42 <key> <host>@<username> are there (key pair file)) with login key pair wo some once creted bellow action we just need to put our creads there 
+
+// - name: Deploy to EC2
+//       uses: appleboy/ssh-action@master
+//       with:
+//         host: ${{ secrets.SSH_HOST }} // add these secrates as we add before
+//         username: ${{ secrets.SSH_USERNAME }}
+//         key: ${{ secrets.SSH_KEY }} // once you put bello creads it will login in ec2 and run bello scrits
+//         script: |
+//           sudo docker pull 100xdevs/<repo name>:latest // first pull latest docker image
+//           sudo docker stop <web-app - name> || true // stop the old container called web-app
+//           sudo docker rm <web-app - name> || true // remove associated vlouems may be not sure check once , you can also skip this
+//           sudo docker run -d --name <web-app - name> -p 3005:3000 100xdevs/<repo name>:latest // start new container
+
+
+// but one problem is, it will start my server on ec2 server like this (see pic 42) so 1 more thing you have to do is crate enginx server, ceate reverce proxcy and add server like this(see pic 44)
+
+// on ec2 install nginx,add reverce procxy ()
