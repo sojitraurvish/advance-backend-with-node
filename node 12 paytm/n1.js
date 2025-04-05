@@ -300,6 +300,26 @@
 //           sudo docker run -d --name <web-app - name> -p 3005:3000 100xdevs/<repo name>:latest // start new container
 
 
-// but one problem is, it will start my server on ec2 server like this (see pic 42) so 1 more thing you have to do is crate enginx server, ceate reverce proxcy and add server like this(see pic 44)
+// but one problem is, it will start my server on ec2 server like this (see pic 42) so 1 more thing you have to do is crate enginx server so install nginx, ceate reverce proxcy and add server like this(see pic 43,44)
 
-// on ec2 install nginx,add reverce procxy ()
+// on ec2 install nginx,add reverce procxy (and add this setting in 45 img) so any requst week-18-class.100.com should goto our next js docker container on localhost:3005 port , and bellow in that file we can add 443 port for http and also can add certificate but we will see that letter on right now just see the port forwording and by defalut every reqest comes to port 80 http, but when we change 443 and add certificate then http will start working
+
+// but now i have to link domain with my server ipv4
+
+// so now server is ready but i have to add entry in dns, i want to use subdomin so i can add new custom entry dns section for subdomian, click on manin domain, add new A type entry and add your server ipv4 and link it, and it will start wokring
+
+// for certification and https check video once
+
+// this is how you can inject docker scrects from github(add in section section) to docker (see pic 47)
+
+// starts the docker image  so that  it restats if it goes down (similar to pm2), right now if for some reson if docker container goes down so it does not restart, so add this flag i do not remember exact but i think it is --restart-always (see pic 48 ), so when it goes down it automatically restarts
+
+// autoscaling you can do in ec2 (may be with auto sclling groups)as well but we can use this amzon elastic beanstalk now try to deply on that
+
+// instead of dockerhub you can deploy on ECR -> Elastic container registory
+// then try plling in                     ECR -> Elastic container service <- that's let's you auto scale docker containers
+
+// or try ASG - > auto scallin group
+// GCP -> 
+
+// with iic you can start sever or ec2 or other machine with code (see pic 49) as dev opps enginerss 
