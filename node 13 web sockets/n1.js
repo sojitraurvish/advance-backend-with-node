@@ -145,3 +145,5 @@
 // if you want 1day, 7day, 10day, 1month, 7month data to store and you want all these data togather when you use charts use timesdb
 
 // when you have sticky connection you use load balanceer in between and check ther okay you are user1 from room1 okay then you goto ws1 server like that (see pic 41) 
+
+
