@@ -59,4 +59,113 @@
 
 // https://medium.com/@deepakchandh/different-types-of-redis-architecture-3181950b68b7
 
-// run redis locally with docker (see pic 33)
+// Note : whenever you run postgress in your machine locally or via docker you can use psql cli in terminal and pass postgres command so while working with redis you need to install redis cli but because we are using some docker image it is already intall over there so you just go inside the redis container and run cmd redis-cli and talk to redis you do not have to instaill in your machine, can you install in your machine yes you can but it is not needed
+
+// run redis locally with docker (see pic 33) 
+// 1) run redis container
+// 2) go inside your containerr to access redis cli
+// 3) once you inside the redis container run cmd redis-cli to go inside the cli mode
+
+// redis also used as massage brocker(see pic 23) mean it mean tow things that we disscuss earlier meassageing quesues and pubsub that is want we focus on today we also use redis as cache and db as well but first we focus on these two above asspects
+
+//  it works to store data and work as message brocker
+
+// let first store the data (see pic 36), it is like storeing key value pare
+// cmd SET key "values"
+// cmd SET urvish "sojirtra"
+
+// if you are using redis to store as cache (unfortunatedly we can here store only string not object but we can store object as string so we first stringify it and can store it (see pic 37)) this is how i would cache the data then how i would get the data like this (see pic 38)
+
+// to get the stored data
+// cmd GET urvish
+
+// to delete data after delete i access it get nil mean noting exitsts
+// cmd DEL urvish
+
+// here one more thing to understand is hash set and hash get - if you want to store multiple things for single key like username this this, email id is this then use HSET - if you want to store the data more in sql fation
+// HSET(hash set) user:1000(user with id 100) name "this"(name is this) and so on.... in future may be have address also
+
+// to get the data of that pericualr user (see pic 40)
+// HGET user:100 name
+
+// if you want to store complex data use HSET,if you wan to store simgple data use SET 
+
+// but if you want to store user specific for role specific data the use so if you want like if there is paid users then they should get data like that then do somting like this (see pic 41) store the data user with user id notheing elSE
+
+// we can do this above caching useing node js also but our focus is on queue and pubsub also do it with cli and with howt do it with node js
+
+// queues using cli and node js and let's build the system like this(see pic 42) where browser sends a reauest to primary backend backend puts it in a quesue and worker pick it from the queue wo we have to right primary backcode, worker code we do not need browser we send request form postman but we have to right two node js process a primary backend that pushes to redis queue and the node js worker that pulls from the redis queue  and  process a queue 
+
+//(see pic 43) you can also push to a topic/queue on redis and other process can pop it e.g good example of this is leetcode submitions that need to be proceessed asynchronouly
+
+//(see pic 44) the way to push in queue in radis is this with cli
+
+// LPUSH <queue name - problems> <userdata - 1 we do not generayly put 1 we pull all the data that we want to process may json data object or araray by json.strigified string with multiple object and node js process will parse it to json leter on>
+// LPUSH - mean push from left side
+
+// Note - if you are pushing form left then pop form the right otherwise it will became stack(see pic 45)
+
+// to pop from queue
+// RPOP problems
+
+// and similar to this there is RPUSH and LPOP
+
+// blocking pop mean i will wait for certain seconds untill someone comes and push somting i will quickly pop it and exit
+
+// BRPOP problems <0 - means wait for infinite time utill someone comes and push somting pop and exit>
+// BRPOP problems <5 - means wait for 5 seconds if someone comes during that time pusj somting then pop and exit or if time elaps without gating any push then just exits after 5 seconds>
+
+// check above senario by creating two redis client in terminal whather it works or not in one therminal do BRPOP and it will block the main thread and resolve it when someone push to queue (see pic 46)
+
+// now lets implement the first part using node.js (see pic 43,47,48,49) the second part pubsub will see letter on, with node we use the redis library, will help use to talk to redis database
+
+// creaet empty node js folder
+// inside that create two folder
+// 1) express-server
+// 2) worker
+
+// in both ther folder run these command to init packege.json
+// npm init -y
+// npx  tsc --init
+
+// in both the folders in tsconfig.josn change root dir to ./src and outdir to ./dist
+// create src/index.ts folder in both the folders
+
+// what worker need to do it just need to pull somting from redis and do a fack process on it we are not running the code to run end user's code  that we will do once we reach to cuber natic her we just take the data from queue and then run fack timer that it is processing the code and then sending back acceted to user   so in worker folder just instal redis as dependiency
+
+// but primary server need to do two thing expose the http endpoint means it need express and also need to push to a queue which means it need redis on the express backed install two thing redis and express
+
+// in express-backend import createClient from redis this allows you to create a client and on this client you can use lpush or lpop and one more thing you have to do is await client.connect() 
+
+// note : both the code i wrote in respective file so check there
+
+// what this workers do, when you start these workers, they are just polling the queue do you have somting, do you have somting, do you have somting okay you have somting okay give it to me i will run it and then do things afterwords send to pubsubs, but they need to infinightly polling the queue so that we pull for loop (check the worker code file)
+
+//async function main() {
+//    await client.connect();
+//    while (1) {
+//      const response = await client.brPop("submissons", 0); // Note : instead of running this while loop infinite with rpop(it always sends null time to time and your loop will keep running) use brpop and await it so you get blocked here untill you do not get something then process submition
+      // here you can run users code in decker container with docker exec
+    //   console.log(response);
+    //   await new Promise((resolve) => setTimeout(resolve, 1000));// this is where do that expensive opration
+      // send it to pubsub
+    //   console.log("Processed users submissions");
+    // }
+//   }
+  
+
+// after this run worker code 4 time with diff terminal window and start 4 clients because in real world you have multiple workers beacause your website have 100 of users, (see pic 50) i have started 4 workers and all 4 them are waiteing and ( blocked) for when someting will comes in the queue now lets put somint in queue with express backend and i will start sending postman request, (see pic 51) as i add data in queue it is picked by rendom workers , what if all the workes are down(stop all 4 codes), that is fine we will keep piling up in queue (so it wait inside queue), and as you start your worker(workers goes up) it will again start processing your queue, this is the banifit of async system if the worker are ever down you just bring them back and they again start polling from the queue and this is how you can build the first part of leet code(see pic 42)
+
+// the thing which is remain(see pic 52 this we cover in letter ofline video) is what is pub sub and how woker can publish to pubsub to websockt server
+
+// Note : queue usecase is important if you are bulding the system like leetcode because in leet code you are letting the end users run an expensive opration on your compute(your machines) and when you do that make sure that you do not run that in your primary backend and also make sure you have limited workers, 3 workers, if lot of people send me data i can tell to workors that do this, do this, do this, i can just push it in queue and hope that workers will auto scale eventuly if the queue is long then they become 20 workers and pick up and start to process that is why one usecase of using message queues
+
+// Pubsubs - what if a worker that have processed the user's code what if they want to send to end user that here is your submition accepted or rejected how they do that the worker can tell directly to the browser, wo workes can publish to pubsub that is runing on ec2 that can tell the user via pubsub (that this is user 1 with id 1 that and this is his code status) to websocket server to user browser 
+
+// redis run on single threse so it can not run two pop opration at time it will do one by one
+
+// question - what if when you pop soming from queue and the your posecesing server goes down and can process your request but task alredy pop from queue here you can use, use redis queue acknowlagement if i pop somting form queue and if i do not respond back in some time then  queue assume it did not preceess, again push that item in queue, 
+
+// AWS SQs only provides you queue but redis provides you more
+
+// sns simple notificaiton servicex
