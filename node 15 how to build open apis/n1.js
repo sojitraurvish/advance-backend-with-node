@@ -1,0 +1,84 @@
+// open apis spec - if your are tinking to build a website where you want other developer to directly hit your backend servers (see pic 1) you want your frontend hit your backend apis but you want other also hit your apis without interacting your frontend
+
+// why open api spec(see pic 2)
+
+// leet code db structure see pic 3
+
+// see pic 4(juge 0 for code exection)
+
+// check video 20.1 if you want to build leet code -> see real code how you should build 
+
+// openapispec.yml // how to generate this files auto generated as you write code
+// openapispec.json to create swigger docs see pic 5,6 to do that
+
+// way to generate spce file (see pic 8)
+// generete openapispec file throw comments (see pic 7) but when you update endpoint you have update comment also to get update in spec file
+// you have to add strict typscript to auto generate this files so use zod, tsoa
+
+// ----------------------------------------------------------------------------------------
+// what we learning 
+// 1 stateful vs stateless backends 
+// 2 state management in backend app
+// 3 singleton patten
+// 4 pub sub + singleton patten
+
+// 1 stateful vs stateless backends - (see pic 10,diagram see pic 11), let say you have backend, you have millon users which means you have to scale http server(you have multiple servers and have load balancer infront of them), but if you have simple http backend where does this backend store this data, in most fullstack app you try to put all these data in db you won't store in your backend server(stateless) but why, 1) backend are very auxilary they can die anytime they can come anytime you can scale up scale down, if you start to data on backend either in memory of node js process or if you store in filesystem in node js process if server goes down then all the data goes vanished and that why you persists data in database, in cms they store data in state you should not do that you should store in redis for cash but not inmomery,(see pic 12,13) but where then state become supper important - assume you are building chess game where two person are playing if you are maintaing your state in db(mean all the moves user did then after sometime assume user1 and2 done 1000 moves now user1 again taking there elephant 2 stap froword then you have to fest fetch all the steps data from db and check is it valid move or not and this you have to do on each move now assume you have 1000 records that you have to pull and filter again and again) so here state become suuper important and you should store state inmemorey (same thing work for game like counter strike)
+
+// Note- (see pic 14)Stickiness - the problem that comes when you have inmemory data  is you have to make sure that the  user who are instrested  in a specific room, get coonected to specific server, e.g in chess, exchange app, counter strike in all three of these,(see pic 15) let say you are playing chess if two people are playing chess then does not matter how many server are there, two people are currently playing game with eachother need to be connected with same server, why, beacause the server that has your moves, current state, right, so you can not do like second person goes to diff server (see pic 16) this server does not know your moves and thay why you have to add stickiness- it means if this server dies where user 1 and 2 is connected  if this user disconnectes or refreshes make sure when they join back they join the same server so there should be some stickyness, you can join user a rendom server and that does not happen in stateless server over they you say where ever you want to join and send request to anyone, but in statefull if user 1 and 2 are connected to room 1 then they need to be conneted to same server that is currently holding a state of room1, now you have question can i store the state of room1 to maltiple places, yes you can when you scale this application a lot if you has chess app where you have a 1m users in room 1, 2 people is playing and almost a 1m people are subscribting in spectator mode then you have to store the state of room1 everywhere(on diff servers) but it is very hard to implement
+// in case fo exchange app order book exists on single server parsal usdc order book exist on signle server, first form first request go to primary server it add it queue and then request pick up by parsal usdc server(see pic 17)
+// in case of counter stick also the people who are playing togather they shoul be conencted to same server and on server it stores the coordinates to all the users but why they store here not in db beacuse user update there location very frequetly and if store in db then your server everytime ask db for previous location to calculate someting and it will take time     
+
+// Note: if you have banch of backend server then first user join the room on sever where load is not much and then all other user join the same room on that server
+
+// Note: one more reason why in chose game you store data in memomory is when new user joins you have to take that crrent user data form db and show to new user
+
+//(see pic 18) now state in js process (we understoud statefull servers, but let's see how can you store the state) as we have statndredn way to do state management in frontend(recoil, redux, zustund) like that we have standred ways to store state on backend  (see pic 18) like this will you store the state where all these plople are conneted to same server and whenever user take move i will push into array in a big object this is also good way to store the state but there are good ways to store state,(see pic 19,20) this state might beting used by multiple files, not just one, so this folling approach  might not  work, (see pic 20) here i will maintain file called store.js which maintain array or object where you store  bunch of games and there well be index.ts where there will be a websocket connection is created your user connected to server any time they send a new message to create new game or create new move then you update that in store.ts like the new game is created please add game4 key here and inside that this white user this is black user so this is one approach, 2) let say you have file called logger.ts or db.ts who gole is every 5 mins(you can also add this data to db imidately see harkirat chess video on youtube) takes the state from store.ts file and add in database so that the database is insync with the inmemorey data so this is the row way 
+
+// see pic 21 this is one why you can remove sitckyness by storing your state in redis but here once down side is you have higher latency
+// in counter strike you do not need to store your moves in database because you do not have calculate anything based on previous move
+
+// in application like gather town you have to create someting called router and that router helps user to create appropreat server it may happen tha once server have too much load if new user comes then and it is not part of room that is in that server then it alocate new server and create room then all new user of that room will be added to that server and your servers also tells you router constantely by hart biting(see pic 22) like am am allowe, i am allow, is also send how much cpu of mine is used if it has least useges then router sends new fresh connection there if it is new user all together and  also if any server goes down so router allocate new server if you createing sticky architecture or else you can manage this by storting in redis but as i said it has slight higher latency 
+
+// above we show ugly uproach to maintain the state of game by storing in state.ts file and also putting in db my log.ts file now let see the good approach to with classes and  singleton pattern (see pic )
+
+// let's create class that or(singleton pattern) you can also use redux in back to manage state it also works in backend we also try pubsub + singleton pattern this pleple use mostly
+
+// 1 stores games
+// 2 exposes functions that let you mutate the state
+
+// Note: in chess, realtime game, exchange in all three of this you have to store inmemory data
+
+// can you just store the object in server(first method that we did above) yes you can  but that are some down sides to this, the down side is you directly interating with data  when user moves you directly says user.1 moves with object(see pic 24,25,26 here whoever is new coder they have to look and the object and the code so instead of string data like that we use singleton patten where create class and inside that function and create function like that Gamepad.addMove("room1","e4"), would not it be nice if we structure our state batter by this way who ever is calling your function does not have to worried about the actual state like ovv in store file state is an array i have to push only certain way, they can directly call this function and add the state (or Gamepad.addGame) without worring about the internal logic about how state is maintain and the other benifit of creating the class like this is a you can update this class rather than storing into file system you store in redis, rather then storing in redis store it in postgress table so it mean you can always update this class you can create multiple versions of this class like initallly you do RedisStorage.addGame, then you can do LocalStorage.addGame, then you can do PostgressStorage.addGame you can create multiple class and have similar singnature by extending them and if you do not use these classes or just dirclty push to array then if you want you push that array data in redis then you have to write that redis.hset directly outside of where you wirte code and if you need it two time at diff place then your code get repitative that why we use class so now let see how to do class management with class and know that logic with class see store.ts file also see image 27,28, now we will see more better approach (see pic 29,30), one more thing in future if i have to change these fuctions and store the data in redis then i can simpally do put redis login in function and whoever is useing that function logins apply everywhere and my data get store ni redis) do not understand right then let impement by writting code and first see ugly way (CHECK  week-21 code) and to understand these more see harkirat chess video of game 
+
+// NOW let's see new thing pub sub + singleton(see pic 31) 
+// what if you cerate a system where users can subscribe to the feed of stocks (prices)
+// this appi is going to use by 1m users how to build it see the pic we will be creating system like this where you have bunch of websocket servers and you have pubsub and you have 1m users who have created websocket connections redomly with server like i am intrested in apple stock, i am interested in google stock so user can connect rendomly to any of the sserver these server do not have any state they are compleltely stateless it is not like that that two people are interested in apple stock then they are connected to same server they get to rendom one, and now some external service will tell you that apple price is 200$ and this pubsub need to broadcast it to right servers if user 1 is interested in apple stock and he is connected to ws1 then this server need to tell pubsub that i am interested in apple stock please give me the update and same for user 4 it is connected to ws4 and if this person leaves then this ws4 server need to tell pubsub bro i am no longer interested do not forword me any more apple stock this is what we supporse to build   
+
+// this is how you scale the websocket server if you want the person1 who is in room1 connect to ws1 and person 4 in room2 connects to ws4 even they are in same game then you need pubsub to broadcast the data, (in terms of chess i made e4, e5 moves, i validated the e4,e5 move i send it to pub sub, then pubsub server send to other server who interested in it, if you have millon user then all of them are connected to diff servers then pubsub need to broadcast the events of that room to every server, you can introduced this architecture you can in chess game that we made right now we have sickey websocket connection over there but you can implement this over there and you must)
+
+// what is pubsub - it let's backend server to talk to each other,  how do they talk to each other if one backedn server want to know somting to other backend server, which as i said in chess game could be  like if person 1 is playing game with person 2 assume these both are plaing a game on same server ws1 but there is a spectator(there is someone who is looking to the game) that person on ws4 server so when ever move is made by user 1 and user 2 it need to reach to spectatore via ws4 server(see pic 33) and that mean if fisrt need to reach ws4 server( where there is requirement for one backend server need to talk to other backend server)(here you can create http request beause assume what if there is 100 spctator on same game connected to 100 diff server the you can create 100 diff http request it is costly) where you  need pubsub,(see pic 34) so when ever any moves comes like e4,e5 from user1 or user2 it can just tell a pubsub that i am publishing an event on room1 taht this move is happen over there e4,e5, and waht does the pubsub need to do, it need be like who was subscribe to room1 and affcource p3 spectetore is here even before this user1,or user2 publish happen to pubsub, this sepctetor via ws4 server tell or subscribe to pubsub that i am interested to all events of room1 and sciene it say that then pubsub will get that message and forword it to ws4 and it will forword it end user that is one common usecase of pubsub to backend to talk to eachother what is the other common usecase what we are building a stock ticker app where people can say hay i am inerested in this stock, so assume there are two users user1 and user2 both are inerested in apple price both subscribe to diff ws servers,  (see pic 35 and you have one more backend server which get price form nysc and send to both ws server and finally to the user but the better architecture is you use pub sub instead of this backend server because pubsub is made for this usecase), now who ever is(see pic 36) inerested in apple price please subscribe tell me(pubsub) or lete me know that you are subscribe to the apple stock and now whenever there is update in apple stock i(pubsub) will to the respective subscribeed servers who we will take the resposibility to forwording it to end users this is pubsub  
+
+// now lets implemet pubsub + singleton (see pic 32 )
+
+// first see pub sub in termil with cli and then will see in node js process
+
+// 1) need to start pubsub locally, there are many popular pubsub, radis is one that we will be using today so try to run redis locally (see pic 36)
+// open two terminal connect redis in both of them and go insite the container(see pic 37) now let simulate pubsub in redis now run to go in redis-cli (see pic 38) now  here  i can publish an evnet, i can write a command to subscribe to let say appel sock any update comes for appele please send it to me(see pic 40 that we did in terminal 1), now let pulish event in terminal 2 (see pic 41) you can see whenever i pushlish in terminal 2 it reaches in terminal 1 where i have subscribed for apple events, now same thing we did for two subscribers(see pic 42) so now when i pushlish an event it reaches to both the subscribers(afcourse these are the node js servers ) this is how pubsub works, Note: there will not be any redom person or server can publish event in your server because your servers only have the creads of redis no buddy else have,
+// 
+//  now we need to convert this to node js process (see file PubSubManagers.ts's code)
+
+
+
+// there are multiple patterns you can create class addpeter pattern, factory pattern, her we have used stategy pattern
+
+// in statefull server evnen when you are creating chess game then you have to add that steps data in database then you can add it in queue and after somepoint of time it will reach to db that how you can not have redendency on backend server to add data imidiatly in db(see pic 44)
+
+// for router you can store the state in redis or postgress, eventually you have multiper server so multiple router to allocate you server s0...
+
+// livekit and like that all (see pic 45)
+
+// when to use websocket(if you want liablity that your messages should goes one place and reach to another place then use websockets the game like chess) or webrtc(if you are not woring about every event should reach to other plave then use webrtc like in counter strik game if you are movin around 30fps and flew events get missed it's fine as long as last event reaches so there we use webrtc
+
+// websockets is used to push event server to client you can also do server polling also 
+
+
