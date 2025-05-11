@@ -528,20 +528,22 @@
 
 // I feel like this will be a two day class. Let's take a breather. I think this is a lot to chew. Before we proceed into the code, which will be coming, you know, from here onwards, let's look at Q and A a bit. Let's take a breather before we proceed.
 
+// GLARING : 
 // Any questions? Does add track also get done on browser two? Well, if this browser two wants to send you data, then yes. But if browser two doesn't, then you don't have to. Only the party that needs to send the data needs to do AdTrak.
-
 // Understood, wrote this for myself. Here only p p c one sends data where p c two is a receiver. The connection is peer to peer, but p c one is sending data because it made an offer and got the response from PC two. And yes, sir, send me the data. Offer is exactly.
 
+// GLARING ANS: 
 // Offer is what usually sends data. Answer is what receives data. This isn't technically true. An offer can also receive data, but that leads to something called glaring in WebRTC, which is why you avoid it. The party that is sending the data is usually the offeror.
 
 // Party that is receiving the data is the answer. Just out of curiosity, let's say we have 10 people. Herkirath can't send media to nine people, but if you have something like a distributed peer to peer architecture, like you send video to two other members and then two members will in turn send the media to four members and so on. I understand this might introduce latency where HLS could be used. We achieved somewhat minimum latency, 10 to 50 people.
 
-// So you can, so what you're describing is, is an architecture video. I don't send video to everyone. I send video to some people who send it to more people, who send it to more people. Yeah. That's somehow how torrent works.
+// So you can, mmmmm're describing is, is an architecture video. I don't send video to everyone. I send video to some people who send it to more people, who send it to more people. Yeah. That's somehow how torrent works.
 
 // Right? There are a few seeders and, you know, you can get data from multiple seeders. You can implement it. I can tell you, it the reason you don't want to implement it is reliability. If you're on a Zoom call, there are 50 people, if one person drops off, 30 people will stop receiving video because they were receiving that video transitively from that person.
 
 // So you usually have a single source of truth. You want to avoid the architecture that you've just described. What are ICE candidates? They are candidates that other people can, you know, connect you to from. For example, if I go back two slides, these are the two candidates that you can connect to me from.
 
+// Note SDP :
 // You can either connect to me locally or you can connect to me on this public IP. I've made screen share accounts, react app because it's in browser client working fine, kinda like in the video. When the browser asks for myQDA permission, is this for generating the SDP? No, it has nothing to do with generating the SDP. You could have a WebRTC connection between two parties that are just sharing data.
 
 // They are not sharing video at all. SDP is needed there. SDP is for two parties to connect and tell what are they sharing. Now, if they're sharing video, then the SDP will have a video section. If they're sharing audio, the SDP will have an audio section.
@@ -578,81 +580,107 @@
 
 // Alright. Title poll seven. Oh, Launching it. You know, based on the poll, let's do it. Okay, pretty obvious.
 
+
+// ZOOM and GOOGLE architecture
 // So it's 70% or 65%. Let's discuss how to scale it and 30% the other side. So let's write the code tomorrow. Anyways we'll give you some breathing rooms. If you want to, do this, like understand this better tomorrow, this is the code for today you'll find on slide number six.
 
 // Try to run this project locally, see if you do see the video on both the sides, try to go through the code. The other code base that you can go through is the code base I shared in slide one, which was you know this one right here. This also is a slightly more advanced version of the same code base that has two way communication. I think it makes a lot of sense for us to discuss the other architectures first, because number one, there are like a lot of videos. You can implement this yourself.
 
-// This is very hard to find. And you know, maybe let's dive a bit into these libraries and how they work as well. Other architectures. A lot of people are now asking in chat, hey, this is how Zoom does this. This is how Google Meet do it.
+// This is very hard to find. And you know, maybe let's dive a bit into these libraries and how they work as well. Other architectures(sp 58). A lot of people are now asking in chat, hey, this is how Zoom does this. This is how Google Meet do it.
 
-// Like, is there a peer connection that happens here as well? And the answer is yes. If you are on a Google Meet call, you know, inside your browser, and this is browser that has open that has Google Meet open, then you do have a peer connection over there as well. If I go to meet.google.com right now and create a fresh meeting over here, about colon web app. If I open about colon web app, you will see a peer connection has been created.
+// Like, is there a peer connection that happens here as well? And the answer is yes. If you are on a Google Meet call, you know, inside your browser, and this is browser that has open that has Google Meet open, then you do have a peer connection over there as well. If I go to meet.google.com right now and create a fresh meeting over here(sp 59), about colon web app. If I open about colon web app, you will see a peer connection has been created.(sp 60 )
 
 // It has also connected. You might ask, Harkir, no one is present on the other side. How is this? Look at the state completed, connected. This is a good, you know, thought experiment.
 
 // I went to meet.google.com. Let me paste this in chat. Try coming here. A few people. Don't do anything shady.
 
-// If I admit a few people here, let me mute my tab so someone's speaking, I don't hear it. You will see there is still a single peer connection, even though there are six people on the call right now, there is a single peer connection, which means everything that I've told you until now has been a lie. It is not like this is browser two. And then, you know, this is browser three. And then this is browser four.
+// If I admit a few people here(sp 61), let me mute my tab so someone's speaking, I don't hear it. You will see there is still a single peer connection, even though there are six people on the call right now, there is a single peer connection(sp 62), which means everything that I've told you until now has been a lie(sp 63). It is not like this is browser two. And then, you know, this is browser three. And then this is browser four.
 
 // I have four different peer connections. That is ideally what you do in WebRTC. Right? I just shared it's a peer to peer call, which means I should have been directly connected to all the four parties. In fact, I told you I should have been able to get their IP addresses as well.
 
-// Okay. I can go here and I can find, getcha, this is the other side's IP address, but I'm not able to do it. Why? Because I'm not directly connected to them. I am connected to a Google server.
+// Okay.(sp 65) I can go here and I can find, getcha, this is the other side's IP address, but I'm not able to do it. Why? Because I'm not directly connected to them. I am connected to a Google server.
 
-// This 14225082233 is a Google server. What is this thing on the left? This is my own IP. This is the Google server IP. I am connected to a Google server, which is doing all this, you know, orchestration of what stream I should receive and whatnot.
+// This 14225082233 is a Google server(sp 65). What is this thing on the left? This is my own IP. This is the Google server IP. I am connected to a Google server, which is doing all this, you know, orchestration of what stream I should receive and whatnot.
 
-// So I'm going to end with the Google Meet call. The architecture that we've discussed until now does not work for a multi party call. It does not work if more than five people come. Why? Because if this is her Kirat, how many people will her Kirat send the video to?
+// So I'm going to end with the Google Meet call. The architecture that we've discussed until now does not work for a multi party call(dp 63). It does not work if more than five people come. Why? Because if this is her Kirat, how many people will her Kirat send the video to?
 
-// Okay. So one person, two person, three person. I cannot send it to a hundred people. If I need hundred people on the call, we need an architecture that looks like this. There is a Google server in the middle.
+// Okay. So one person, two person, three person. I cannot send it to a hundred people. If I need hundred people on the call, we need an architecture that looks like this(sp 66). There is a Google server in the middle.
 
 // I send my video. I send my video to a single Google server. I don't have to send it to everyone, someone in India, Chennai, US, Bangalore. I just send it to a single server and it's the job of this single server to forward it everywhere. E c two machines, AWS machines have high bandwidths up to 10 GBPS.
 
 // I don't have that on my browser. I I don't have that on my hotel wifi. I can't send everyone a video. My bandwidth will not be able to handle it. But can a beefy EC2 machine handle it?
 
-// Yes. It will receive video from me and forward it to everyone else. This specific architecture is what is called SFU slash selective forwarding unit. It selectively forwards my packets based on, you know, what page you are on. If you are currently on a Google Meet call, you might be on there might be a hundred people here, but, you know, you might just be on page one and everyone who's on page two, you don't need to receive that video.
+// Yes. It will receive video from me and forward it to everyone else. This specific architecture is what is called SFU(sp 67) slash selective forwarding unit. It selectively forwards my packets based on, you know, what page you are on. If you are currently on a Google Meet call, you might be on there might be a hundred people here, but, you know, you might just be on page one and everyone who's on page two, you don't need to receive that video.
 
 // You need to selectively receive video. If there is a person, you know, if browser two has my video muted or if browser two is not looking at me right now, they don't need to receive my video. You can selectively forward information slash video slash audio to other people, which is where the name comes from. This is the most popular architecture. Be it Zoom, I would get guess, assume, of course their code is an open source, but guess and assume they use an SFU.
 
-// Most other companies I've worked for, all of them use this specific architecture. To recap, what is the problem with P2P? It doesn't scale well beyond three to four people. You create a mesh like this. If this is a multi person call, I am receiving video from three people.
+// Most other companies I've worked for, all of them use this specific architecture. To recap, what is the problem with P2P(sp 68)? It doesn't scale well beyond three to four people. You create a mesh like this. If this is a multi person call, I am receiving video from three people.
 
 // I am sending video to three people. Receiving is there is a problem there as well. If I have a hundred people, I shouldn't be receiving video from a hundred people. I should be receiving video from 10 people who are on my current page. If I go to the next page, Zoom has this concept of pages, right?
 
 // You're on page one and then you click on next, you reach page two, you see the next 30 people. Then you click on next, you see page three, so on and so forth. I should just be receiving video from those 30 people. But if you have a mesh architecture like this, you can't say, you stop sending me video for a while. And then, you know, you, whenever you reach that page, you tell this other party, now you send me data.
 
-// So it's very hard to selectively get video versus if you have a server in the middle, you can do a lot of things. You can tell the server KIRA I only need three twenty p video. In fact, come back to the video call. Let me show you something interesting. If you join back in this call and, you know, have your all's cameras on, you will see, can someone turn on their camera?
+// So it's very hard to selectively get video versus if you have a server in the middle, you can do a lot of things. You can tell the server that I only need three twenty p video(sp 69). In fact, come back to the video call. Let me show you something interesting. If you join back in this call and, you know, have your all's cameras on, you will see, can someone turn on their camera?
 
 // Okay. This camera is on. If I spin this, oh, see, they see pin to the screen. How do I pin this? There we go.
 
-// Did you notice a change? It'll be very hard to see, but did you notice a change? Okay, man. Where did it go? Look at Akshay Thora's video.
+// Did you notice a change? It'll be very hard to see, but did you notice a change? Okay, man. Where did it go? Look at Akshay Thora's video.(sp 70)
 
-// Let me pin it. Did you see a change from a low quality to high quality? And if I unpin him, you might see okay, that's hard to see. Let me do that one more time. Let me pin him.
+// Let me pin it.(sp 71) Did you see a change from a low quality to high quality? And if I unpin him (sp 70), you might see okay, that's hard to see. Let me do that one more time. Let me pin him.
 
 // Did you see the quality was really low? And suddenly became really high. Let me try that one more time on Akshat. I click on this. Quality is really low, suddenly really high.
 
 // What am I doing? I am telling the server, kya Akshat is small for me. Please give me his three twenty p video. As soon as I pin him, I can tell the server, now you give me its seven twenty p video. All of these optimizations, you cannot do in a peer to peer architecture.
 
-// You cannot, I mean, you can do sort of very hard to do. Basically, you know, you have to stop a peer connection, restart a peer connection, or I mean, you can find a weird way to do it. It's not like you cannot do this in peer to peer, but it becomes very easy, and, you know, an SFU like architecture to trim down the video qualities that you're receiving. If I feel like my, you know, incoming bandwidth is getting choked, if I feel like I'm not receiving enough packets, I can just tell the server, please turn off everyone's video. And, you know, the server will just stop sending me videos.
+// You cannot, I mean, you can do sort of very hard to do. Basically, you know, you have to stop a peer connection, restart a peer connection, or I mean, you can find a weird way to do it. It's not like you cannot do this in peer to peer, 
+// 
+// 
+// 
+// but it becomes very easy, and, you know, an SFU like architecture to trim down the video qualities that you're receiving. If I feel like my, you know, incoming bandwidth is getting choked, if I feel like I'm not receiving enough packets, I can just tell the server, please turn off everyone's video(sp 72). And, you know, the server will just stop sending me videos.
 
 // It'll only send me audios that might, you might have seen that on zoom from time to time or Google Meet. Okay. You know, it says, okay, you are on a bad connection and it automatically stops video for everyone. So that is what an SFU lets you do. That is why you want to use an SFU.
 
-// For a multi person call, it lets you do optimizations like stopping people's video, downscaling people's video, and then, you know, receiving video in a paginated manner. So that is what an SFU is. A popularly available SFU is MediaSoup. This is in TypeScript. So, you know, everything we have done should be fairly easy for you to understand.
+// For a multi person call, it lets you do optimizations like 
+// stopping people's video, 
+// downscaling people's video, and then, you know,
+//  receiving video in a paginated manner. So that is what an SFU is.
+//  A popularly available SFU is *MediaSoup.(sp 73) This is in TypeScript. 
+// So, you know, everything we have done should be fairly easy for you to understand.
 
-// A lot of companies use this. This was a popular thing in twenty twenty one twenty twenty. Eventually, you know, PION came. Now I think PION is a slightly better one, the one right below it, this one right here. So what is PION?
+// A lot of companies use this. This was a popular thing in twenty twenty one twenty twenty.
+//  Eventually, you know, *PION came(sp 74). Now I think PION is a slightly better one, the one right below it, this one right here. So what is PION?
 
 // It is web it's as it says here, pure Go implementation of WebRTC. It is not an SFU. Pion is not an SFU. You can create an SFU using Pion, but Pion itself is not an SFU. It is just the WebRTC protocol written in Golang.
 
-// So you can run WebRTC on the server. Just how you can run WebRTC in the browser, Pion lets you run WebRTC on, let's say, an EC2 machine. If this is an EC2 machine and if this is your browser, you can create a peer connection here, and you can create a peer connection here in a Golang process, and you can directly send data from here to a Golang process. That is what PION lets you do. Same thing with MediaSwoop.
+// So you can run WebRTC on the server. Just how you can run WebRTC in the browser, Pion lets you run WebRTC on, let's say, an EC2 machine(s[ 75]). If this is an EC2 machine and if this is your browser, you can create a peer connection here, and you can create a peer connection here in a Golang process, and you can directly send data from here to a Golang process. That is what PION lets you do. Same thing with MediaSwoop.
 
-// Only in MediaSwoop, the thing that's running here is not Golang. It's C plus plus Let's not go there. That's architecture number two. Let me quickly discuss the last architecture, which is architecture number three, which sometimes is used, sometimes is not used. It's called MCU.
+// Only in MediaSwoop, the thing that's running here is not Golang. It's C plus plus Let's not go there. That's architecture number two.
+// 
 
-// Forgot the full form. I totally forgot the full form. It mixes audio and video together on the server before it forwards it. The problem with this second approach is, k, you know, if you have an SFU and if there are 50 people on a call, you have to receive everyone's audio. You can stop a video.
+//  MCU
+//  Let me quickly discuss the last architecture, which is architecture number three, which sometimes is used, sometimes is not used. It's called MCU.
+
+// Forgot the full form. I totally forgot the full form.
+// 
+//  It mixes audio and video together on the server before it forwards it. 
+// 
+// 
+// The problem with this second approach is, k, you know, if you have an SFU and if there are 50 people on a call, you have to receive everyone's audio. You can stop a video.
 
 // You can do pagination for video. You cannot do pagination for audio. If I'm on page one, I should still hear the person who's on page three. So the problem or the most common problem that you'll see in an SFU architecture is, can I be receiving too many audios? If there are 50 people in a call, I, of course, have to receive 50 audio tracks, which is, you know, a lot of audio tracks to create.
 
-// It leads to CPU. It'll basically lead to audio crackling. If you do ever have 50 people on a call and, you know, you use this architecture, you will hear audio crackle from time to time because your browser has so many incoming tracks. To MCU says, I am going to receive a lot of audio. I am going to mix it on the server.
+// It leads to CPU. It'll basically lead to audio crackling. If you do ever have 50 people on a call and, you know, you use this architecture, you will hear audio crackle from time to time because your browser has so many incoming tracks. 
+// 
+// To MCU says, I am going to receive a lot of audio. I am going to mix it on the server.(sp 77)
 
 // What does mixing it mean? Basically means, you know, I am going to merge all of them together and send out a single merged audio to the end user. So the end user only receives a single audio. I do the heavy lifting of merging all of them together and sending it to the end user. This takes away the problems in SFU.
 
 // Another optimization that is done here is, okay, only three loudest audios can be chosen care. A lot of people might be speaking, but you don't really need to hear people beyond three, three people, five people are talking at the same time. There's no point of merging five audios and sending it to everyone. So an optimization that you do on an MCO is you take the three loudest audios, merge them, and that is what you send to everyone. That way, the audio bandwidth that's going out, the audio, the number of incoming tracks that are coming are very small.
 
-// Everyone gets the same merged audio and you don't have to worry about, you know, 50 audio streams going out. Can you do the same thing for video? Can you mix video on the server? Can you create a grid on the server itself and send out a mixed video to everyone? You can do that.
+// Everyone gets the same merged audio and you don't have to worry about, you know, 50 audio streams going out.
+// 
+// 
+//  Can you do the same thing for video? Can you mix video on the server? Can you create a grid on the server itself and send out a mixed video to everyone? You can do that.
 
 // Do you do it? No, because everyone has a different layout. Someone might want to pin someone. Someone might want to move someone somewhere else. So you don't mix video on the server.
 
@@ -664,7 +692,10 @@
 
 // You will only create a single layout and, you know, you are then restricted to single layouts if you mix video on the server. So usually what do you use an MCU for? For mixing audio. For everything else, you use an SFU, which means video gets transmitted to everyone, but audio gets merged back to in a slightly more optimal fashion of only top three loudest audios are chosen and merged and sent to everyone, videos are not merged. That is the third architecture.
 
-// This also isn't used anywhere If I'm being honest, this is an optimization you think of, you try to implement and then you, you see, but you know, this is very expensive to begin with. You know, if you, one big difference between an SFU and an MCU is, SFU only forwards packets, which means it doesn't need to decode video. It doesn't need to understand this is an h two six four video. Is it an a v one video and use something like, you know, FFmpeg to decode it versus an MCU? It does need to decode the video.
+// This also isn't used anywhere If I'm being honest, this is an optimization you think of, you try to implement and then you, you see, but you know, this is very expensive to begin with. You know, if you, 
+// 
+// 
+// one big difference between an SFU and an MCU is, SFU only forwards packets, which means it doesn't need to decode video. It doesn't need to understand this is an h two six four video. Is it an av one video and use something like, you know, FFmpeg to decode it versus an MCU? It does need to decode the video.
 
 // What does decoding the video mean? As I said, video is compressed before it's sent over. And if you want to ever merge two, three videos together, merge two, three audios together, you need to first decompress them. You need to convert them into a normal video before you actually merge them, which is why you need something like FFmpeg here to actually decode the data. And then you have to merge the data.
 
@@ -678,6 +709,11 @@
 
 // What's the name of that video thingy that comes in G Sock every year? Anyone know? I've made a video on it in the past. Nope. Let's see.
 
+// janus 
+// jitsi
+// mediasoup -> used here
+// pion
+
 // Jitsi, there you go. Jitsi is another one. MediaSoup Ion. Basically, one of these four projects you're using. If you're creating scalable WebRTC applications.
 
 // What do I mean by scalable WebRTC applications? Applications that need to scale to more than five people. If you want eight people on the same call, if you want 20 people on the same call, you use, one of these four projects. And most probably the one that we'll be using tomorrow or, you know, in the chess repository would be MediaSoup. Even though in chess, only two people need to talk at the same time, even though we might start from a peer to peer architecture there, we will most probably move to an SFU architecture.
@@ -688,9 +724,11 @@
 
 // They don't directly connect to other people. They connect in a peer to peer fashion only, but to a server. The WebRTC protocol doesn't know what's on the other side. It could be another browser. It could be another server.
 
-// It doesn't care. Its goal is to forward video. In case of an SFU or an MCU, it forwards video to a server whose job in case of an MCU is KR, this is browser one. This is browser two. Both of them are sending me two audios.
+// It doesn't care. Its goal is to forward video. In case of an SFU or an MCU, it forwards video to a server whose job 
+// 
+// in case of an MCU is that, this is browser one. This is browser two. Both of them are sending me two audios.
 
-// You know, this person is saying hello at some point and this person let's just said, how are you? The job of the MCU is to merge them so that two audios sort of get merged together And then this merged audio is what goes to, let's say, you know, the third person who wants to receive the audio here and they receive, hello, how are you? Can someone tell me what is the problem in this? The problem is, you know, I cannot send this back to this person. If I say return them, hello.
+// You know,(sp 78) this person is saying hello at some point and this person let's just said, how are you? The job of the MCU is to merge them so that two audios sort of get merged together And then this merged audio is what goes to, let's say, you know, the third person who wants to receive the audio here and they receive, hello, how are you? Can someone tell me what is the problem in this? The problem is, you know, I cannot send this back to this person. If I say return them, hello.
 
 // How are you? They will listen. They will hear themselves. Do you get the problem here? If I merge a single audio here and send it back to this person, this person will hear themselves saying, hello, how are you?
 
@@ -704,7 +742,12 @@
 
 // MCU will, of course, be slower because it needs to encode and decode data, which is why you will see syncing issues, which you cannot fix. If there are, you know, audio and videos coming from two separate services, then of course you will see a desync in the audio and the video. It's not as noticeable, but yes, it will happen. Then how does muting works if mixing happens? Muting works locally.
 
-// Right? If I mute myself here, then I stop sending my audio to the server itself. It cannot mix it anymore. So muting happens locally. So how SFU work in Unacademy?
+// Right? If I mute myself here, then I stop sending my audio to the server itself. It cannot mix it anymore. So muting happens locally.
+// 
+// 
+// 
+// 
+// So how SFU work in Unacademy?(sp 79)
 
 // It's pretty simple, right? So if this is the teacher, who is the teacher that you want to talk about? It's fine. Let's just call them teacher. They produce the video to a server, which in this case is, you know, an SFU, and all the students that are on the other side.
 
@@ -712,7 +755,7 @@
 
 // There's a video on the top right. There is a chat over here and then there are usually, you know, slides over here. That's what the architecture or, you know, the UI looks like. This video specifically gets distributed like this, goes from teacher to SFU and then, you know, gets forwarded everywhere. The chat probably goes to a separate WebSocket server.
 
-// The slides that currently appear probably also go through a separate WebSocket server. If the teacher ever shares their screen, then that screen share also goes to this SFU and reaches everyone and, you know, appears in everyone's screen. I have a hunch that most probably Unacademy also does something extra, which is that they have a distributed SFU. What do I mean when I say distributed SFU? I mean, you know, they do this, their single SFU forwards data to another SFU and, you know, another SFU and another SFU.
+// The slides that currently appear probably also go through a separate WebSocket server. If the teacher ever shares their screen, then that screen share also goes to this SFU and reaches everyone and, you know, appears in everyone's screen. I have a hunch that most probably Unacademy also does something extra, which is that they have a distributed SFU(sp 80). What do I mean when I say distributed SFU? I mean, you know, they do this, their single SFU forwards data to another SFU and, you know, another SFU and another SFU.
 
 // And, you know, users eventually get data from one of these three edge nodes. The reason for this is I've seen them support like 25,000 people, 30,000 people, and a single server cannot support as many, video calls, which is why, you know, they most probably have a what's called a distributed SFU, which is which was pretty much my job, in one in the ForeSeeI company. They hired me because they had an architecture that had a single SFU. They wanted to scale beyond that. And, you know, I explained an architecture similar to this.
 
@@ -726,7 +769,7 @@
 
 // It's recordings. The answer is recordings. Someone say that? No. If if it was if you do a Zoom recording, you know, if there are 10 people on the call, that those videos are getting merged.
 
-// Anyhow, single layout is getting created, a single audio is getting created, an MP four file is getting created somewhere on the server. Cloud recording, basically, if you've heard of cloud recording, this is something that needs to merge unless you're doing it locally. If someone is doing it on their browser, then it's a different thing. But most of the times, for example, currently on Zoom, cloud recording is on, which means somewhere Zoom has a server. If you know, this is currently her Keerat, my browser.
+// Anyhow, single layout is getting created, a single audio is getting created, an MP four file is getting created somewhere on the server. Cloud recording, basically, if you've heard of cloud recording, this is something that needs to merge unless you're doing it locally. If someone is doing it on their browser, then it's a different thing. But most of the times, for example, currently on Zoom, cloud recording is on, which means somewhere Zoom has a server. If you know, this is currently her Keerat, my browser. (sp 81)
 
 // This is a Zoom s f u. These are you guys that are receiving the video. I am sending my video and audio here and you guys are receiving it, but also there is another server receiving all this audio video, most probably from the SFU, which is a mixer. Now if you want to call it an, you can call it an MCU since it's mixing video, but let's just call it a mixer. Whose job is, here, whoever is producing, if Harkir is having his camera on right now and screen.
 
@@ -734,6 +777,7 @@
 
 // What is another use case? RTMP out. If I currently want, I can, you know, in my Zoom credentials, put an RTMP URL and stream my video out to YouTube or Twitch. There also, you know, the mixed video is what goes out eventually. So, you know, this process of mixing, is usually is the real world sort of example that someone asked for something like this.
 
+// Note : 
 // Integration is the best example. What do you mean integration? Tesla, Google, Microsoft are using MCU. Probably. I Tesla, they might almost every big company like this will use an MCU for audio, but not for video.
 
 // I would highly doubt anyone uses MCUs for videos. Alright. Let's open chat here. That's it for today, guys, by the way. I think we're done with all the architectures.
@@ -744,7 +788,12 @@
 
 // Yeah. Back in tomorrow, we'll try to do the same thing. Let someone chat now. I'm going to call it, and, you know, answer some questions from now. Alrighty.
 
-// How does Transcode from seven twenty to three sixty p on the file? Great fucking question. I totally forgot. There is this thing called simulcast. So as you said, great question.
+
+
+// Note:
+// How does Transcode from seven twenty to three sixty p on the file?
+// 
+//  Great fucking question. I totally forgot. There is this thing called simulcast. So as you said, great question.
 
 // I totally forgot this, but, this is Herkias browser and Herkias is sending his video to an SFU. But if you remember a while back, I said, other people can actually tell the SFU, 'K I only need three sixty p video. I don't need seven twenty p from Harkiraj because, you know, he's small on my machine. If I pin him, then this will say seven twenty p, which means either the video, either Harkiraj is sending me seven twenty p and thus SFU is converting it from seven twenty p to three sixty p. The SFU is transcoding it.
 
@@ -752,17 +801,20 @@
 
 // You don't actually transcode on the server. The browser itself sends multiple qualities. If I go to meet.google.com, I can probably prove this as well. If I go here, unless they use, there's another fancy thing that comes after this, I'm sorry, SVC, Scalable Video Coding, something like this. Unless they use that, I can actually show you that I'm sending two videos and not one.
 
-// Outbound. So I'm here on Google Meet. If I look at the WebRTC peer connection here, and if I search for outbound RTP, you you will see I'm sending one video, which is three twenty by 180. And If one of you joins, I would assume, you know, and if you, if one of you joins and pins me, I would assume the second video would also begin to go out. So can you join and pin me?
+// Outbound. So I'm here on Google Meet. If I look at the WebRTC peer connection here, and if I search for outbound RTP(dp 82), you you will see I'm sending one video, which is three twenty by 180. And If one of you joins, I would assume, you know, and if you, if one of you joins and pins me, I would assume the second video would also begin to go out. So can you join and pin me?
 
 // Just pin me locally on your machine. And then, you know, we should probably see another outbound RTP here. There you go. I don't see that. I just see if you notice here, the frame width and frame height increased from three sixty to seven twenty.
 
-// Now can someone make me small and someone make me big? Like whoever's like Mati and Zela, can you make me small? There you go. Now I have one video going out that is 500 by whatever three twenty. Now I have another video going out that is twelve eighty by seven twenty.
+// Now can someone make me small and someone make me big? Like whoever's like Mati and Zela, can you make me small? There you go. Now I have one video going out that is 500 by whatever three twenty(sp 83). Now I have another video going out that is twelve eighty by seven twenty.
 
 // So you send multiple videos, directly from the client, which leads to some load extra load on the client. Like here it is now sending two videos, but that is fine because, you know, if you're sending seven twenty p, it's only a little more work to send three sixty p, it's even lesser more work to send two forty p. So yeah, it's a long answer to your question. JS Fiddle is not working for me. I can only see left video, but I don't see the right video.
 
 // Then you have some console errors, sir. You should go to JS Fiddle and, you know, look at the console errors. You'll find something there. I hope you have the original code there. I've made some changes.
 
 // If you open this specific Fiddle, click on start over here. As long as you have camera permissions, this should work. If it is not working, then open your console, find some web artists here. You might try on a different browser. Yeah.
+
+
+
 
 // Can we use GetStream modules instead of Direct WebRTC again? Yes. That's one set of companies that came. You know, that includes GetStream, Diet, hundred MS, LifeKit. Twenty such companies came during that bull run.
 
@@ -804,11 +856,16 @@
 
 // Airtel has a bunch of IPs that they own. And then, you know, you get assigned one of those. As you move around, you change your addresses. You change your ISP, Intrent Service Provider, and then you get their own addresses. As we are sending and receiving media through WebRTC, there are vulnerabilities inside like Omegle, which a hacker can So the short answer is no.
 
-// Most WebRTC calls are encrypted using something called DLTS, TLS over UDP. So long story short, you know, everything is worth TLS. So it is encrypted. Is FTP similar to WebRTC? No, they're separate, completely separate protocols.
+// Most WebRTC calls are encrypted using something called DLTS, TLS over UDP. So long story short, you know, everything is worth TLS. So it is encrypted.
+// 
+//  Is FTP similar to WebRTC? No, they're separate, completely separate protocols.
 
-// Will we, will which architecture is used in games like PUBG, where they have a global chat as well? That has nothing to do with WebRTC. Especially, you know, chat in PUBG, simple web WebSocket, so they might use a lot of companies' old games use XMPP. That's another protocol. Probably use one of them.
+// Will we, will which architecture is used in games like PUBG, where they have a global chat as well? That has nothing to do with WebRTC. Especially, you know, chat in PUBG, simple web WebSocket, so they might use a lot of companies' 
+// 
+// 
+// old games use XMPP. That's another protocol. Probably use one of them.
 
-// Is SFU kind of a TURN server? Great question. No, but I totally get why you might feel that. Yes. That is a good question.
+// Is SFU kind of a TURN server(sp 84)? Great question. No, but I totally get why you might feel that. Yes. That is a good question.
 
 // People again, Great question. No. A lot of times you need a TURN server along with an SFU as well. The protocol that's running on a TURN server is, you know, the TURN protocol. So what project would you run on this server?
 
